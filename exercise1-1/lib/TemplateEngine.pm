@@ -10,15 +10,11 @@ use Class::Accessor::Lite (
 sub render {
   my ($self, $vars) = @_;
 
-  for my $key (keys %$vars) {
-    $vars->{$key} = $self->_escapeHTML($vars->{$key});
-  }
-
   open my $template_fh, '<', $self->file
     or die "Could not open " . $self->file . ": $!";
   my $template_text = join '', <$template_fh>;
 
-  $template_text =~ s/{%\s*(\w+)\s*%}/$vars->{$1}/g;
+  $template_text =~ s/{%\s*(\w+)\s*%}/$self->_escapeHTML($vars->{$1})/eg;
 
   $template_text;
 }
