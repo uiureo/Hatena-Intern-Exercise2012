@@ -6,10 +6,11 @@ use FindBin::libs;
 
 use_ok 'TemplateEngine';
 
-my $template = TemplateEngine->new( file => 'templates/main.html' );
-isa_ok $template, 'TemplateEngine';
+subtest '{% %}' => sub {
+  my $template = TemplateEngine->new( file => 'templates/main.html' );
+  isa_ok $template, 'TemplateEngine';
 
-my $expected = <<'HTML';
+  my $expected = <<'HTML';
 <html>
   <head>
     <title>タイトル</title>
@@ -20,9 +21,31 @@ my $expected = <<'HTML';
 </html>
 HTML
 
-cmp_ok $template->render({
+  cmp_ok $template->render({
     title   => 'タイトル',
     content => 'これはコンテンツです。&<>"',
-}), 'eq', $expected; 
+  }), 'eq', $expected; 
+};
+
+subtest '{{% %}} - return unescaped HTML' => sub {
+  my $template = TemplateEngine->new ( file => 'templates/main2.html' );
+  isa_ok $template, 'TemplateEngine';
+
+  my $expected = <<'HTML';
+<html>
+  <head>
+    <title>タイトル</title>
+  </head>
+  <body>
+    <p><marquee>これはコンテンツです!!!!</marquee></p>
+  </body>
+</html>
+HTML
+
+  cmp_ok $template->render({
+    title   => 'タイトル',
+    content => '<marquee>これはコンテンツです!!!!</marquee>',
+  }), 'eq', $expected; 
+};
 
 done_testing();

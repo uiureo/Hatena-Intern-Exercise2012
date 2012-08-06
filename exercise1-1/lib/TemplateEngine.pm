@@ -14,6 +14,9 @@ sub render {
     or die "Could not open " . $self->file . ": $!";
   my $template_text = join '', <$template_fh>;
 
+  # {{% ... %}} returns unescaped HTML
+  $template_text =~ s/{{%\s*(\w+)\s*%}}/$vars->{$1}/g;
+  # {% ... %} returns escaped HTML by default
   $template_text =~ s/{%\s*(\w+)\s*%}/$self->_escapeHTML($vars->{$1})/eg;
 
   $template_text;
