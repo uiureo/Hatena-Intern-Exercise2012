@@ -24,13 +24,10 @@ sub render {
 }
 
 sub _escapeHTML {
-  $_ = $_[1];
-  s/&/&amp;/g;
-  s/>/&gt;/g;
-  s/</&lt;/g;
-  s/"/&quot;/g;
-
-  $_;
+  my $str = $_[1];
+  my %character = ( '&' => '&amp;', '<' => '&lt;', '>' => '&gt;', '"' => '&quot;' );
+  $str =~ s/([&<>"])/$character{$1}/g;
+  $str;
 }
 
 1;
