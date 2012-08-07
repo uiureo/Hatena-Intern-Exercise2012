@@ -70,4 +70,31 @@ HTML
   }), 'eq', $expected; 
 };
 
+subtest '{%+ a %} ... {%- a %} - loop over collections \'a\'' => sub {
+  my $template = TemplateEngine->new ( file => 'templates/main4.html' );
+  isa_ok $template, 'TemplateEngine';
+
+  my $expected = <<'HTML';
+<html>
+  <head>
+    <title>タイトル</title>
+  </head>
+  <body>
+    <p>コンテンツ!!!!</p>
+    <p>コンテンツ!!!!!!</p>
+    <p>コンテンツ!!!!!!!!</p>
+  </body>
+</html>
+HTML
+
+  cmp_ok $template->render({
+    title   => 'タイトル',
+    entries => [
+      { content => 'コンテンツ!!!!' },
+      { content => 'コンテンツ!!!!!!' },
+      { content => 'コンテンツ!!!!!!!!' },
+    ],
+  }), 'eq', $expected;
+};
+
 done_testing();
