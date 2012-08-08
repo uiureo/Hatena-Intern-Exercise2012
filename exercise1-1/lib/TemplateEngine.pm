@@ -7,9 +7,6 @@ use Class::Accessor::Lite (
   rw => [ qw(file) ],
 );
 
-use Data::Dumper;
-sub p { print Dumper($_[0]); };
-
 sub render {
   my ($self, $vars) = @_;
 
