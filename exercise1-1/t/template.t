@@ -81,6 +81,7 @@ subtest '{%+ a %} ... {%- a %} - loop over collections \'a\'' => sub {
   </head>
   <body>
     <p>コンテンツ!!!!</p>
+    <p>いえ〜い</p>
     <p>コンテンツ!!!!!!</p>
     <p>コンテンツ!!!!!!!!</p>
   </body>
@@ -90,10 +91,11 @@ HTML
   cmp_ok $template->render({
     title   => 'タイトル',
     entries => [
-      { content => 'コンテンツ!!!!' },
-      { content => 'コンテンツ!!!!!!' },
-      { content => 'コンテンツ!!!!!!!!' },
+      { content => 'コンテンツ!!!!', comments => [{ message => 'いえ〜い'}] },
+      { content => 'コンテンツ!!!!!!', comments => [] },
+      { content => 'コンテンツ!!!!!!!!', comments => [] },
     ],
+    empty => []
   }), 'eq', $expected;
 };
 

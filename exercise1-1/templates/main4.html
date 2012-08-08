@@ -5,6 +5,14 @@
   <body>
     {%+ entries %}
     <p>{% content %}</p>
+    {%+ comments %}
+    <p>{% message %}</p>
+    {%- comments %}
     {%- entries %}
+
+    {%+ empty %}
+    <p>ぎゃー</p>
+    {%- empty %}
+
   </body>
 </html>
