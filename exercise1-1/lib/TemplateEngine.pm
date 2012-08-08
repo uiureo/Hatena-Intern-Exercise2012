@@ -7,6 +7,9 @@ use Class::Accessor::Lite (
   rw => [ qw(file) ],
 );
 
+use Data::Dumper;
+sub p { print Dumper($_[0]); };
+
 sub render {
   my ($self, $vars) = @_;
 
@@ -20,23 +23,23 @@ sub render {
 sub _replace {
   my ($self, $template_text, $vars) = @_;
 
-  ## TODO: refactor regexp
   # {%+ a %} ... {%- a %} - loop over collections 'a'
   $template_text =~ 
-    s/^\s* {%\+\s*(\w+)\s*%} \s*$ \n (.*) \n \s* {%\-\s*\g1\s*%} \s*$/{
-      my @replaced = ();
-      if (@{$vars->{$1}} >= 1) {
-        for my $var (@{$vars->{$1}}) {
-          push @replaced, $self->_replace($2, $var);
-        }
+    s/^\s* {%\+\s*(\w+)\s*%} \s*? \n (.*\n) \s*? {%\-\s*\g1\s*%} \s*$ \n /{
+      my $replaced = "";
+      my $sub_template = $2;
+      for my $var (@{$vars->{$1}}) {
+        $replaced .= $self->_replace($sub_template, $var);
       }
-      join "\n", @replaced;
+      $replaced;
     }/smegx; 
 
   # {{% ... %}} returns unescaped HTML
   $template_text =~ s/{{%\s*(\w+)\s*%}}/$vars->{$1}/g;
+
   # {% ... %} returns escaped HTML by default
   $template_text =~ s/{%\s*(\w+)\s*%}/$self->_escape_html($vars->{$1})/eg;
+
   # {%# ... %} is comments and ignored
   $template_text =~ s/{%#[\s\w]*?%}//g;
 
