@@ -1,7 +1,9 @@
-package TemplateEngine;
 use strict;
 use warnings;
+
+package TemplateEngine;
 use utf8;
+use IO::File;
 use Class::Accessor::Lite (
   new => 1,
   rw => [ qw(file) ],
@@ -10,9 +12,10 @@ use Class::Accessor::Lite (
 sub render {
   my ($self, $vars) = @_;
 
-  open my $template_fh, '<', $self->file
+  my $template_fh = IO::File->new($self->file, 'r')
     or die "Could not open " . $self->file . ": $!";
-  my $template_text = join '', <$template_fh>;
+  my $template_text = join '', $template_fh->getlines;
+  $template_fh->close;
 
   $self->_replace($template_text, $vars);
 }
